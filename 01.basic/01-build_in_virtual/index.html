@@ -1,0 +1,2304 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="k8s入门与进阶实战-kubernetes基础快速入门">
+      
+      
+        <meta name="author" content="phy.xyz">
+      
+      
+        <link rel="canonical" href="https://webtech.wiki/k8s/01.basic/01-build_in_virtual/">
+      
+      
+        <link rel="prev" href="../10-storage/">
+      
+      
+        <link rel="next" href="../../02.enhancement/01-summary/">
+      
+      
+      <link rel="icon" href="../../assets/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.4.1">
+    
+    
+      
+        <title>1.11   搭建简单集群 - k8s入门与进阶实战</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.72749a73.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a5377069.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubeadmk8s" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="k8s入门与进阶实战" class="md-header__button md-logo" aria-label="k8s入门与进阶实战" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            k8s入门与进阶实战
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              1.11 &nbsp; 搭建简单集群
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5 2c-1.79 1.15-3 3.18-3 5.5s1.21 4.35 3.03 5.5C4.46 13 2 10.54 2 7.5A5.5 5.5 0 0 1 7.5 2m11.57 1.5 1.43 1.43L4.93 20.5 3.5 19.07 19.07 3.5m-6.18 2.43L11.41 5 9.97 6l.42-1.7L9 3.24l1.75-.12.58-1.65L12 3.1l1.73.03-1.35 1.13.51 1.67m-3.3 3.61-1.16-.73-1.12.78.34-1.32-1.09-.83 1.36-.09.45-1.29.51 1.27 1.36.03-1.05.87.4 1.31M19 13.5a5.5 5.5 0 0 1-5.5 5.5c-1.22 0-2.35-.4-3.26-1.07l7.69-7.69c.67.91 1.07 2.04 1.07 3.26m-4.4 6.58 2.77-1.15-.24 3.35-2.53-2.2m4.33-2.7 1.15-2.77 2.2 2.54-3.35.23m1.15-4.96-1.14-2.78 3.34.24-2.2 2.54M9.63 18.93l2.77 1.15-2.53 2.19-.24-3.34Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5 2c-1.79 1.15-3 3.18-3 5.5s1.21 4.35 3.03 5.5C4.46 13 2 10.54 2 7.5A5.5 5.5 0 0 1 7.5 2m11.57 1.5 1.43 1.43L4.93 20.5 3.5 19.07 19.07 3.5m-6.18 2.43L11.41 5 9.97 6l.42-1.7L9 3.24l1.75-.12.58-1.65L12 3.1l1.73.03-1.35 1.13.51 1.67m-3.3 3.61-1.16-.73-1.12.78.34-1.32-1.09-.83 1.36-.09.45-1.29.51 1.27 1.36.03-1.05.87.4 1.31M19 13.5a5.5 5.5 0 0 1-5.5 5.5c-1.22 0-2.35-.4-3.26-1.07l7.69-7.69c.67.91 1.07 2.04 1.07 3.26m-4.4 6.58 2.77-1.15-.24 3.35-2.53-2.2m4.33-2.7 1.15-2.77 2.2 2.54-3.35.23m1.15-4.96-1.14-2.78 3.34.24-2.2 2.54M9.63 18.93l2.77 1.15-2.53 2.19-.24-3.34Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="zh-CN" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/webtechwiki/k8s" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    k8s入门与进阶实战
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="k8s入门与进阶实战" class="md-nav__button md-logo" aria-label="k8s入门与进阶实战" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    k8s入门与进阶实战
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/webtechwiki/k8s" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    k8s入门与进阶实战
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    第 01 章 &nbsp; k8s的基础概念
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            第 01 章 &nbsp; k8s的基础概念
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00-start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.01 &nbsp; k8s简介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-conception/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.02 &nbsp; 核心概念
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-compoents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.03 &nbsp; 核心组件
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-yaml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.04 &nbsp; 资源配置清单
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-namespace/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.05 &nbsp; 名称空间
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-pod/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.06 &nbsp; pod的基本操作
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.07 &nbsp; 控制器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.08 &nbsp; 服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-ingress/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.09 &nbsp; Ingress
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.10 &nbsp; 存储
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    1.11 &nbsp; 搭建简单集群
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    1.11 &nbsp; 搭建简单集群
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    一、概述
+  </a>
+  
+    <nav class="md-nav" aria-label="一、概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-multipass" class="md-nav__link">
+    1.1 使用multipass搭建虚拟环境
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-vagtrant" class="md-nav__link">
+    1.2 使用vagtrant搭建虚拟环境
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-virtualbox" class="md-nav__link">
+    1.3 使用VirtualBox搭建虚拟环境
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    1.4 目标
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    二、准备环境
+  </a>
+  
+    <nav class="md-nav" aria-label="二、准备环境">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ubuntu1804" class="md-nav__link">
+    2.1 创建Ubuntu18.04虚拟机
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-root" class="md-nav__link">
+    2.2 修改root用户密码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-iptables" class="md-nav__link">
+    2.3 关闭防火墙和iptables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dockerkubeadm" class="md-nav__link">
+    二、安装docker与kubeadm
+  </a>
+  
+    <nav class="md-nav" aria-label="二、安装docker与kubeadm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-docker" class="md-nav__link">
+    3.1 安装与配置docker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-kubeadmkubeletkubectl" class="md-nav__link">
+    3.2 安装kubeadm、kubelet、kubectl
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 集群镜像准备
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#k8s" class="md-nav__link">
+    三、k8s集群初始化
+  </a>
+  
+    <nav class="md-nav" aria-label="三、k8s集群初始化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-master" class="md-nav__link">
+    3.1 初始化master节点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 拷贝配置文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33_1" class="md-nav__link">
+    3.3 配置集群网络
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 初始化集群工作节点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-k8s" class="md-nav__link">
+    3.5 重置k8s集群
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    四、总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    第 02 章 &nbsp; 在centos7搭建k8s
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            第 02 章 &nbsp; 在centos7搭建k8s
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/01-summary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.01 &nbsp; k8s进阶知识概述
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/02-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.02 &nbsp; k8s二进制安装环境准备
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/03-sign-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.03 &nbsp; 证书签发环境准备
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/04-install-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.04 &nbsp; 安装docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/05-install-harbor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.05 &nbsp; 安装harhor服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/06-install-etcd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.06 &nbsp; 安装etcd服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/07-install-apiserver/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.07 &nbsp; 安装apiserver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/08-install-agent-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.08 &nbsp; 安装L4反向代理服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/09-install-other-component/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.09 &nbsp; 安装控制节点的其他组件
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/10-install-kubelet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.10 &nbsp; 安装kubectl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/11-install-kubeproxy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.11 &nbsp; 安装kube-02.proxy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/12-cfssl-review/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.12 &nbsp; cfssl证书工具介绍
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/13-kubectl-command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.13 &nbsp; 声明式资源管理方法
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/14-kubectl-yaml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.14 &nbsp; 陈述式资源管理方法
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/15-flannel-plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.15 &nbsp; flannel网络插件
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/16-flannel-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.16 &nbsp; flannel模型介绍
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/17-flannel-optimize/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.17 &nbsp; flannel优化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/18-coredns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.18 &nbsp; 使用coredns实现服务发现
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/19-nodeport/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.19 &nbsp; 服务暴露之nodePort型service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/20-ingress/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.20 &nbsp; 服务暴露之Ingress
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../03.ultimate/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    第 03 章 &nbsp; 在debian搭建k8s
+  </span>
+  
+
+            </a>
+            
+              <label class="md-nav__link " for="__nav_4">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            第 03 章 &nbsp; 在debian搭建k8s
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/01-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.02 &nbsp; k8s二进制安装环境准备
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/02-install_containerd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.03 &nbsp; 安装containerd作为runtime
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/03-sign-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.04 &nbsp; 签发SSL证书
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/04-install-ectd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.05 &nbsp; 安装etcd服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/05-install-apiserver/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.06 &nbsp; 安装apiserver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/06-install-agent-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.07 &nbsp; 搭建L4反向代理服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/07-install-other-component/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.08 &nbsp; 安装controllerManager和scheduler
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/08-install-kubelet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.09 &nbsp; 安装kubectl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/09-install-kubeproxy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.10 &nbsp; 安装proxy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/10-install-calico-coredns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.11 &nbsp; 安装calico和coreDNS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/11-install-traefik/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.12 &nbsp; 安装traefik
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03.ultimate/12-deploy-app/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.13 &nbsp; 在k8s环境部署应用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    第 04 章 &nbsp; 扩展知识
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            第 04 章 &nbsp; 扩展知识
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/01-k8s-resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.01 &nbsp; k8s资源分类
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/02-install-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.02 &nbsp; 使用二进制安装包安装docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/04-install-harbor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.03 &nbsp; 搭建harbor私有镜像仓库
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/05-ip_suggestion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.04 &nbsp; 集群搭建IP网段规划建议
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/06-run-centos6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.05 &nbsp; 解决centos6镜像启动容器失败的问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    一、概述
+  </a>
+  
+    <nav class="md-nav" aria-label="一、概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-multipass" class="md-nav__link">
+    1.1 使用multipass搭建虚拟环境
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-vagtrant" class="md-nav__link">
+    1.2 使用vagtrant搭建虚拟环境
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-virtualbox" class="md-nav__link">
+    1.3 使用VirtualBox搭建虚拟环境
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14" class="md-nav__link">
+    1.4 目标
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    二、准备环境
+  </a>
+  
+    <nav class="md-nav" aria-label="二、准备环境">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-ubuntu1804" class="md-nav__link">
+    2.1 创建Ubuntu18.04虚拟机
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-root" class="md-nav__link">
+    2.2 修改root用户密码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-iptables" class="md-nav__link">
+    2.3 关闭防火墙和iptables
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dockerkubeadm" class="md-nav__link">
+    二、安装docker与kubeadm
+  </a>
+  
+    <nav class="md-nav" aria-label="二、安装docker与kubeadm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-docker" class="md-nav__link">
+    3.1 安装与配置docker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-kubeadmkubeletkubectl" class="md-nav__link">
+    3.2 安装kubeadm、kubelet、kubectl
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 集群镜像准备
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#k8s" class="md-nav__link">
+    三、k8s集群初始化
+  </a>
+  
+    <nav class="md-nav" aria-label="三、k8s集群初始化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-master" class="md-nav__link">
+    3.1 初始化master节点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 拷贝配置文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33_1" class="md-nav__link">
+    3.3 配置集群网络
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 初始化集群工作节点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-k8s" class="md-nav__link">
+    3.5 重置k8s集群
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    四、总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/webtechwiki/k8s/tree/main/docs/01.basic/01-build_in_virtual.md" title="编辑此页" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="kubeadmk8s">使用kubeadm快速搭建k8s集群<a class="headerlink" href="#kubeadmk8s" title="Permanent link">&para;</a></h1>
+<h2 id="_1">一、概述<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="11-multipass">1.1 使用multipass搭建虚拟环境<a class="headerlink" href="#11-multipass" title="Permanent link">&para;</a></h3>
+<p>我们可以使用<code>multipass</code>来创建多台<code>Ubuntu Server</code>虚拟环境，作为Linux集群的环境。如果你不知道<code>multipass</code>这个虚拟化工具的使用方法，可以参考另一篇文章：<a href="https://webcoding.tech/posts/tools_run-ubuntu-on-multipass.html">https://webcoding.tech/posts/tools_run-ubuntu-on-multipass.html</a>。</p>
+<h3 id="12-vagtrant">1.2 使用vagtrant搭建虚拟环境<a class="headerlink" href="#12-vagtrant" title="Permanent link">&para;</a></h3>
+<p>除了multipass，我们还可以使用<code>vagtrant</code>来创建Linux虚拟环境，<code>vagrant</code>的基本操作可以参考这篇文章：<a href="https://webcoding.tech/posts/tools_run-linux-on-vagrant.html">https://webcoding.tech/posts/tools_run-linux-on-vagrant.html</a>。</p>
+<h3 id="13-virtualbox">1.3 使用VirtualBox搭建虚拟环境<a class="headerlink" href="#13-virtualbox" title="Permanent link">&para;</a></h3>
+<p>如果你不想用以上的两款工具，可以直接使用VirtualBox来创建你的虚拟环境，但直接使用VirtualBox操作会更加繁杂，所以更推荐使用multipass或者vagrant。</p>
+<h3 id="14">1.4 目标<a class="headerlink" href="#14" title="Permanent link">&para;</a></h3>
+<p>本次我们将部署一个主（master、管理、控制）节点master1和两个工作（worker）节点worker1、worker2的集群。master1、worker1、worker2每个节点分配2个cpu、2G内存、10G硬盘。这是k8s要求的最低配置，但这些配置完全足够我们用以学习。</p>
+<p>我们将使用multipass来搭建集群环境，下文是在虚拟环境中使用kubeadm搭建k8s集群搭建过程，在后续的文章中也会循序渐进地介绍k8s。</p>
+<h2 id="_2">二、准备环境<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="21-ubuntu1804">2.1 创建Ubuntu18.04虚拟机<a class="headerlink" href="#21-ubuntu1804" title="Permanent link">&para;</a></h3>
+<p>在撰写此文的时候，<code>ubuntu18.04</code>正处于其稳定的生命周期内，本次我们选择<code>ubuntu18.04</code>作为示例。分别创建2核cpu、10G硬盘、2G内存，名为master1、worker1、worker2三台虚拟机，如下命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>multipass<span class="w"> </span>launch<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>-d<span class="w"> </span>10G<span class="w"> </span>-m<span class="w"> </span>2G<span class="w"> </span>-n<span class="w"> </span>master1<span class="w"> </span><span class="m">18</span>.04
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>multipass<span class="w"> </span>launch<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>-d<span class="w"> </span>10G<span class="w"> </span>-m<span class="w"> </span>2G<span class="w"> </span>-n<span class="w"> </span>worker1<span class="w"> </span><span class="m">18</span>.04
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>multipass<span class="w"> </span>launch<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span>-d<span class="w"> </span>10G<span class="w"> </span>-m<span class="w"> </span>2G<span class="w"> </span>-n<span class="w"> </span>worker2<span class="w"> </span><span class="m">18</span>.04
+</code></pre></div>
+<p>使用<code>multipass list</code>列出已创建的虚拟机列表，如下</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pan@pandeMacBook-Pro<span class="w"> </span>~<span class="w"> </span>%<span class="w"> </span>multipass<span class="w"> </span>list
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Name<span class="w">                    </span>State<span class="w">             </span>IPv4<span class="w">             </span>Image
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>master1<span class="w">                 </span>Running<span class="w">           </span><span class="m">192</span>.168.64.4<span class="w">     </span>Ubuntu<span class="w"> </span><span class="m">18</span>.04<span class="w"> </span>LTS
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>worker1<span class="w">                 </span>Running<span class="w">           </span><span class="m">192</span>.168.64.5<span class="w">     </span>Ubuntu<span class="w"> </span><span class="m">18</span>.04<span class="w"> </span>LTS
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>worker2<span class="w">                 </span>Running<span class="w">           </span><span class="m">192</span>.168.64.6<span class="w">     </span>Ubuntu<span class="w"> </span><span class="m">18</span>.04<span class="w"> </span>LTS
+</code></pre></div>
+<p>创建虚拟机之后，我们需要记住IP与虚拟机的对应关系，再对虚拟机进行初始化操作，以下2.2、2.3的操作过程需要在所有主机上进行。</p>
+<h3 id="22-root">2.2 修改root用户密码<a class="headerlink" href="#22-root" title="Permanent link">&para;</a></h3>
+<p>因为后面的操作都是使用<code>root</code>用户进行，下面我们先修改每一台主机的<code>root</code>用户密码，以master1为例，如下操作命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 进入虚拟机</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>multipass<span class="w"> </span>bash<span class="w"> </span>master1
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># 修改root密码</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>sudo<span class="w"> </span>passwd<span class="w"> </span>root
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># 修改密码之后，使用su命令切换root用户</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>su
+</code></pre></div>
+<h3 id="23-iptables">2.3 关闭防火墙和iptables<a class="headerlink" href="#23-iptables" title="Permanent link">&para;</a></h3>
+<p>根据官方文档，防火墙和iptables可能会影响到k8s集群，所以我们都要关闭掉，如下命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># 关闭防火墙</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>ufw<span class="w"> </span>disable
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># 关闭iptables</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>iptables<span class="w"> </span>-P<span class="w"> </span>INPUT<span class="w"> </span>ACCEPT
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>iptables<span class="w"> </span>-P<span class="w"> </span>FORWARD<span class="w"> </span>ACCEPT
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>iptables<span class="w"> </span>-P<span class="w"> </span>OUTPUT<span class="w"> </span>ACCEPT
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>iptables<span class="w"> </span>-F
+</code></pre></div>
+<h2 id="dockerkubeadm">二、安装docker与kubeadm<a class="headerlink" href="#dockerkubeadm" title="Permanent link">&para;</a></h2>
+<p>以下3.1、3.2、3.3的操作过程需要在所有主机上进行。</p>
+<h3 id="31-docker">3.1 安装与配置docker<a class="headerlink" href="#31-docker" title="Permanent link">&para;</a></h3>
+<p>安装docker</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 安装阿里云docker镜像服务的GPG证书</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>apt-key<span class="w"> </span>add<span class="w"> </span>-
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># 写入阿里云docker镜像服务软件源</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>add-apt-repository<span class="w"> </span><span class="s2">&quot;deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu </span><span class="k">$(</span>lsb_release<span class="w"> </span>-cs<span class="k">)</span><span class="s2"> stable&quot;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># 更新软件库</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>apt-get<span class="w"> </span>update
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># 查看可以安装的docke-ce版本</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>apt-cache<span class="w"> </span>madison<span class="w"> </span>docker-ce
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1"># 安装docker</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>apt-get<span class="w"> </span>-y<span class="w"> </span>install<span class="w"> </span>docker-ce<span class="o">=</span><span class="m">5</span>:20.10.17~3-0~debian-bullseye
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># 固定docker-ce版本</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>apt-mark<span class="w"> </span>hold<span class="w"> </span>docker-ce
+</code></pre></div>
+<p>每个人都可以使用阿里云创建自己的镜像加速仓库，比如<code>https://g6ogy192.mirror.aliyuncs.com</code>就是我的个人镜像加速地址，但是你也可以使用，设置镜像仓库地址如下命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># 创建配置目录</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/docker
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># 写入配置文件</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>tee<span class="w"> </span>/etc/docker/daemon.json<span class="w"> </span><span class="s">&lt;&lt;-&#39;EOF&#39;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="s">{</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s">  &quot;registry-mirrors&quot;: [&quot;https://g6ogy192.mirror.aliyuncs.com&quot;],</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="s">  &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;] </span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="s">}</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="s">EOF</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># 重新加载服务的配置文件</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>systemctl<span class="w"> </span>daemon-reload
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c1"># 重启docker服务</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>systemctl<span class="w"> </span>restart<span class="w"> </span>docker
+</code></pre></div>
+<h3 id="32-kubeadmkubeletkubectl">3.2 安装kubeadm、kubelet、kubectl<a class="headerlink" href="#32-kubeadmkubeletkubectl" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># 安装阿里云k8s镜像服务的GPG证书</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>curl<span class="w"> </span>https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg<span class="w"> </span><span class="p">|</span><span class="w"> </span>apt-key<span class="w"> </span>add<span class="w"> </span>-
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># 添加阿里云k8s镜像源</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>cat<span class="w"> </span><span class="s">&lt;&lt;EOF &gt; /etc/apt/sources.list.d/kubernetes.list</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="s">deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="s">EOF</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># 更新软件库</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>apt-get<span class="w"> </span>update
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="c1"># 安装程序</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span><span class="nv">kubelet</span><span class="o">=</span><span class="m">1</span>.18.0-00<span class="w"> </span><span class="nv">kubeadm</span><span class="o">=</span><span class="m">1</span>.18.0-00<span class="w"> </span><span class="nv">kubectl</span><span class="o">=</span><span class="m">1</span>.18.0-00
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="c1"># 固定版本</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>apt-mark<span class="w"> </span>hold<span class="w"> </span>kubelet<span class="w"> </span>kubeadm<span class="w"> </span>kubectl
+</code></pre></div>
+<blockquote>
+<p>需要注意的是：安装的<code>docker</code>版本要和<code>k8s</code>版本匹配，否则<code>k8s</code>可能出现无法驱动<code>docker</code>的情况，以上安装的<code>docker19.03</code>和<code>k8s1.18.0</code>是存在对应关系的，你可以通过查阅k8s官方文档的方式查看更多的对应关系。</p>
+</blockquote>
+<h3 id="33">3.3 集群镜像准备<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<p>使用<code>kubeadm config images list</code>命令查看当前集群基础服务所需要的镜像，镜像版本会根据当前的系统环境（当前安装kubeadm的版本）而定，返回如下内容</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>k8s.gcr.io/kube-apiserver:v1.18.20
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>k8s.gcr.io/kube-controller-manager:v1.18.20
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>k8s.gcr.io/kube-scheduler:v1.18.20
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>k8s.gcr.io/kube-proxy:v1.18.20
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>k8s.gcr.io/pause:3.2
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>k8s.gcr.io/etcd:3.4.3-0
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>k8s.gcr.io/coredns:1.6.7
+</code></pre></div>
+<p>但是由于国内正常访问不到<code>k8s.cgr.io</code>，可以替换阿里云镜像地址：<code>registry.aliyuncs.com/google_containers</code>，执行如下命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-apiserver:v1.18.20
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-controller-manager:v1.18.20
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-scheduler:v1.18.20
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-proxy:v1.18.20
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/pause:3.2
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/etcd:3.4.3-0
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>docker<span class="w"> </span>pull<span class="w"> </span>registry.aliyuncs.com/google_containers/coredns:1.6.7
+</code></pre></div>
+<p>接下来给镜像打标签，得到kubeadm需要的镜像</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-apiserver:v1.18.20<span class="w"> </span>k8s.gcr.io/kube-apiserver:v1.18.20
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-controller-manager:v1.18.20<span class="w"> </span>k8s.gcr.io/kube-controller-manager:v1.18.20
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-scheduler:v1.18.20<span class="w"> </span>k8s.gcr.io/kube-scheduler:v1.18.20
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-proxy:v1.18.20<span class="w"> </span>k8s.gcr.io/kube-proxy:v1.18.20
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/pause:3.2<span class="w"> </span>k8s.gcr.io/pause:3.2
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/etcd:3.4.3-0<span class="w"> </span>k8s.gcr.io/etcd:3.4.3-0
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>docker<span class="w"> </span>tag<span class="w"> </span>registry.aliyuncs.com/google_containers/coredns:1.6.7<span class="w"> </span>k8s.gcr.io/coredns:1.6.7
+</code></pre></div>
+<p>再删除掉从阿里云下载的镜像</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-apiserver:v1.18.20
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-controller-manager:v1.18.20
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-scheduler:v1.18.20
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/kube-proxy:v1.18.20
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/pause:3.2
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/etcd:3.4.3-0
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>docker<span class="w"> </span>rmi<span class="w"> </span>registry.aliyuncs.com/google_containers/coredns:1.6.7
+</code></pre></div>
+<h2 id="k8s">三、k8s集群初始化<a class="headerlink" href="#k8s" title="Permanent link">&para;</a></h2>
+<h3 id="31-master">3.1 初始化master节点<a class="headerlink" href="#31-master" title="Permanent link">&para;</a></h3>
+<p>在master1节点上执行初始化命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>kubeadm<span class="w"> </span>init<span class="w"> </span>--apiserver-advertise-address<span class="o">=</span><span class="m">192</span>.168.64.4<span class="w"> </span>--service-cidr<span class="o">=</span><span class="m">10</span>.96.0.0/12<span class="w"> </span>--pod-network-cidr<span class="o">=</span><span class="m">10</span>.244.0.0/16<span class="w">  </span>--ignore-preflight-errors<span class="o">=</span>Swap
+</code></pre></div>
+<p>参数说明</p>
+<ul>
+<li><code>--apiserver-advertise-address</code>：指定apiserver的服务IP，此处填写master1的IP地址，如果系统包含多个IP，必须选择外网IP（能与其他节点进行网络通信的IP）</li>
+<li><code>--service-cidr</code>：k8s中service网络使用的网段</li>
+<li><code>--pod-network-cidr</code>：k8s中pod网络使用的网段</li>
+<li><code>--ignore-preflight-errors</code>：忽略swap报错</li>
+</ul>
+<p>初始化结果如下</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Your<span class="w"> </span>Kubernetes<span class="w"> </span>control-plane<span class="w"> </span>has<span class="w"> </span>initialized<span class="w"> </span>successfully!
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>To<span class="w"> </span>start<span class="w"> </span>using<span class="w"> </span>your<span class="w"> </span>cluster,<span class="w"> </span>you<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>regular<span class="w"> </span>user:
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$HOME</span>/.kube
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span>sudo<span class="w"> </span>cp<span class="w"> </span>-i<span class="w"> </span>/etc/kubernetes/admin.conf<span class="w"> </span><span class="nv">$HOME</span>/.kube/config
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">  </span>sudo<span class="w"> </span>chown<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>:<span class="k">$(</span>id<span class="w"> </span>-g<span class="k">)</span><span class="w"> </span><span class="nv">$HOME</span>/.kube/config
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>You<span class="w"> </span>should<span class="w"> </span>now<span class="w"> </span>deploy<span class="w"> </span>a<span class="w"> </span>pod<span class="w"> </span>network<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>cluster.
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>Run<span class="w"> </span><span class="s2">&quot;kubectl apply -f [podnetwork].yaml&quot;</span><span class="w"> </span>with<span class="w"> </span>one<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>options<span class="w"> </span>listed<span class="w"> </span>at:
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">  </span>https://kubernetes.io/docs/concepts/cluster-administration/addons/
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>Then<span class="w"> </span>you<span class="w"> </span>can<span class="w"> </span>join<span class="w"> </span>any<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>worker<span class="w"> </span>nodes<span class="w"> </span>by<span class="w"> </span>running<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>on<span class="w"> </span>each<span class="w"> </span>as<span class="w"> </span>root:
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>kubeadm<span class="w"> </span>join<span class="w"> </span><span class="m">192</span>.168.64.4:6443<span class="w"> </span>--token<span class="w"> </span>wkgukj.up6d3a8rng4ytyl0<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">    </span>--discovery-token-ca-cert-hash<span class="w"> </span>sha256:d36346a3820781efd88ae3796a58e2fa139f411f9ddc9c1dc7c9c2add8da5cfb
+</code></pre></div>
+<p>如果出现类似以上的提示信息，代表master节点初始化成功。以上信息提示我们要完成三个操作，并给出了相关提示：一是拷贝配置文件、二是部署pod的网络插件、三是将工作节点加入到集群中。</p>
+<h3 id="32">3.2 拷贝配置文件<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<p>根据初始化结果提示，我们执行以下命令，拷贝k8s的相关配置文件到用户的家目录，才能使master1上当前登录的用户正常操作集群</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># 创建配置用户的k8s文件目录</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$HOME</span>/.kube
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># 拷贝配置和修改所有者，我们本身使用root用户操作，不需要加sudo前缀</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>cp<span class="w"> </span>-i<span class="w"> </span>/etc/kubernetes/admin.conf<span class="w"> </span><span class="nv">$HOME</span>/.kube/config
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>chown<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>:<span class="k">$(</span>id<span class="w"> </span>-g<span class="k">)</span><span class="w"> </span><span class="nv">$HOME</span>/.kube/config
+</code></pre></div>
+<h3 id="33_1">3.3 配置集群网络<a class="headerlink" href="#33_1" title="Permanent link">&para;</a></h3>
+<p>在拷贝好k8s的配置文件到用户家目录之后，我们需要安装网络插件。本次我们使用<code>flannel</code>作为集群的网络插件，将<code>flannel</code>配置文件从github下载保存到master1，文件地址为：
+<a href="https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml">https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml</a>，在master1上将文件命名为<code>kube-flannel.yml</code>。</p>
+<p>需要注意的是，如果我们的（虚拟）主机里存在多个IP，我们需要指定有效IP的网卡（如我们在vagrant里创建的虚拟机，第二个网卡才是有效IP，需要指定有效IP的网卡）。修改flannel资源清单文件，在<code>- --kube-subnet-mgr</code>后面加一条参数配置：<code>- --iface=网卡名</code>，如下</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a># ...
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>containers:
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>      - name: kube-flannel
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>       #image: flannelcni/flannel:v0.16.3 for ppc64le and mips64le (dockerhub limitations may apply)
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>        image: rancher/mirrored-flannelcni-flannel:v0.16.3
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>        command:
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>        - /opt/bin/flanneld
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>        args:
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>        - --ip-masq
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>        - --kube-subnet-mgr
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>        - --iface=enp0s8
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a># ...
+</code></pre></div>
+<p>后执行以下命令创建k8s网络插件</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>kube-flannel.yml
+</code></pre></div>
+<p>如看到包含<code>created</code>的如下类似信息，证明网络插件安装成功</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>namespace/kube-flannel<span class="w"> </span>created
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>clusterrole.rbac.authorization.k8s.io/flannel<span class="w"> </span>created
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>clusterrolebinding.rbac.authorization.k8s.io/flannel<span class="w"> </span>created
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>serviceaccount/flannel<span class="w"> </span>created
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>configmap/kube-flannel-cfg<span class="w"> </span>created
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>daemonset.apps/kube-flannel-ds<span class="w"> </span>created
+</code></pre></div>
+<h3 id="34">3.4 初始化集群工作节点<a class="headerlink" href="#34" title="Permanent link">&para;</a></h3>
+<p>初始化集群管理节点master1之后，我们可以将工作节点worker1和wroker2加入到集群中。将工作节点的初始化命令拷贝到worker1和worker2去执行，使集群的工作节点（worker1、worker2）和管理节点（master1）关联起来，如下命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>kubeadm<span class="w"> </span>join<span class="w"> </span><span class="m">192</span>.168.64.4:6443<span class="w"> </span>--token<span class="w"> </span>wkgukj.up6d3a8rng4ytyl0<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span>--discovery-token-ca-cert-hash<span class="w"> </span>sha256:d36346a3820781efd88ae3796a58e2fa139f411f9ddc9c1dc7c9c2add8da5cfb
+</code></pre></div>
+<p>在工作节点执行初始化命令之后，我们在管理节点master1使用<code>kubectl get pods --all-namespaces</code>查看结果，可以看到类似如下信息</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>root@master1:/home/ubuntu#<span class="w"> </span>kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>--all-namespaces
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>NAMESPACE<span class="w">     </span>NAME<span class="w">                              </span>READY<span class="w">   </span>STATUS<span class="w">    </span>RESTARTS<span class="w">   </span>AGE
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>kube-system<span class="w">   </span>coredns-66bff467f8-pw9br<span class="w">          </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>13m
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>kube-system<span class="w">   </span>coredns-66bff467f8-wsj45<span class="w">          </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>13m
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>kube-system<span class="w">   </span>etcd-master1<span class="w">                      </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>14m
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>kube-system<span class="w">   </span>kube-apiserver-master1<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>14m
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>kube-system<span class="w">   </span>kube-controller-manager-master1<span class="w">   </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>14m
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>kube-system<span class="w">   </span>kube-flannel-ds-c4jnh<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m39s
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>kube-system<span class="w">   </span>kube-flannel-ds-rg58c<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m14s
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>kube-system<span class="w">   </span>kube-flannel-ds-sw85v<span class="w">             </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m15s
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>kube-system<span class="w">   </span>kube-proxy-ddk88<span class="w">                  </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m15s
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>kube-system<span class="w">   </span>kube-proxy-dt825<span class="w">                  </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>13m
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>kube-system<span class="w">   </span>kube-proxy-jgm4h<span class="w">                  </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>3m14s
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>kube-system<span class="w">   </span>kube-scheduler-master1<span class="w">            </span><span class="m">1</span>/1<span class="w">     </span>Running<span class="w">   </span><span class="m">0</span><span class="w">          </span>14m
+</code></pre></div>
+<p>如果需要查看更多的信息（如所运行的宿主机），只需在原命令中追加<code>-o wide</code>参数即可。</p>
+<p>需要注意的是，如果你的列表中显示的所有pod并不是处于Running状态，一般是正在从网络上下载资源，还没有完全启动服务，你需要等待一段时间。你在安装集群的过程中，最好处于一个优质的网络环境。如果你电脑配置允许，你还可以使用上文说明的操作步骤，添加更多的工作节点。</p>
+<h3 id="35-k8s">3.5 重置k8s集群<a class="headerlink" href="#35-k8s" title="Permanent link">&para;</a></h3>
+<p>如果你在搭建过程中出现问题，如因为网络原因安装失败等，或者因为其他原因想重置k8s集群，可以使用以下的操作步骤</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># 驱离工作节点的pod</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>kubectl<span class="w"> </span>drain<span class="w"> </span>worker1<span class="w"> </span>--delete-local-data<span class="w"> </span>--force<span class="w"> </span>--ignore-daemonsets
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>kubectl<span class="w"> </span>drain<span class="w"> </span>worker2<span class="w"> </span>--delete-local-data<span class="w"> </span>--force<span class="w"> </span>--ignore-daemonsets
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># 删除工作节点</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>node<span class="w"> </span>worker1
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>kubectl<span class="w"> </span>delete<span class="w"> </span>node<span class="w"> </span>worker2
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># 重置集群</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>kubeadm<span class="w"> </span>reset
+</code></pre></div>
+<h2 id="_3">四、总结<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>以上是使用kubeadm快速搭建k8s集群的完整说明，或许你的安装会失败。原因可能是你的虚拟环境问题、也可能因为网络原因，或者是你操作错误。如果出现失败，你需要根据你的操作步骤认真分析并重试。</p>
+<blockquote>
+<p>作者wx订阅号：<strong>极客开发者</strong>，禁止转载</p>
+</blockquote>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            回到页面顶部
+          </button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../10-storage/" class="md-footer__link md-footer__link--prev" aria-label="上一页: 1.10 &amp;nbsp; 存储" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                1.10 &nbsp; 存储
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../02.enhancement/01-summary/" class="md-footer__link md-footer__link--next" aria-label="下一页: 2.01 &amp;nbsp; k8s进阶知识概述" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                2.01 &nbsp; k8s进阶知识概述
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 - 2023 phy.xyz
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.4e0fa4ba.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": false, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "none"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>

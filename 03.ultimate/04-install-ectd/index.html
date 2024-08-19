@@ -1,0 +1,1985 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="k8s入门与进阶实战-kubernetes基础快速入门">
+      
+      
+        <meta name="author" content="phy.xyz">
+      
+      
+        <link rel="canonical" href="https://webtech.wiki/k8s/03.ultimate/04-install-ectd/">
+      
+      
+        <link rel="prev" href="../03-sign-prepare/">
+      
+      
+        <link rel="next" href="../05-install-apiserver/">
+      
+      
+      <link rel="icon" href="../../assets/img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.4.1">
+    
+    
+      
+        <title>3.05   安装etcd服务 - k8s入门与进阶实战</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.72749a73.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a5377069.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CFira+Code:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"Fira Code"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#etcd" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="k8s入门与进阶实战" class="md-header__button md-logo" aria-label="k8s入门与进阶实战" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            k8s入门与进阶实战
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3.05 &nbsp; 安装etcd服务
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5 2c-1.79 1.15-3 3.18-3 5.5s1.21 4.35 3.03 5.5C4.46 13 2 10.54 2 7.5A5.5 5.5 0 0 1 7.5 2m11.57 1.5 1.43 1.43L4.93 20.5 3.5 19.07 19.07 3.5m-6.18 2.43L11.41 5 9.97 6l.42-1.7L9 3.24l1.75-.12.58-1.65L12 3.1l1.73.03-1.35 1.13.51 1.67m-3.3 3.61-1.16-.73-1.12.78.34-1.32-1.09-.83 1.36-.09.45-1.29.51 1.27 1.36.03-1.05.87.4 1.31M19 13.5a5.5 5.5 0 0 1-5.5 5.5c-1.22 0-2.35-.4-3.26-1.07l7.69-7.69c.67.91 1.07 2.04 1.07 3.26m-4.4 6.58 2.77-1.15-.24 3.35-2.53-2.2m4.33-2.7 1.15-2.77 2.2 2.54-3.35.23m1.15-4.96-1.14-2.78 3.34.24-2.2 2.54M9.63 18.93l2.77 1.15-2.53 2.19-.24-3.34Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5 2c-1.79 1.15-3 3.18-3 5.5s1.21 4.35 3.03 5.5C4.46 13 2 10.54 2 7.5A5.5 5.5 0 0 1 7.5 2m11.57 1.5 1.43 1.43L4.93 20.5 3.5 19.07 19.07 3.5m-6.18 2.43L11.41 5 9.97 6l.42-1.7L9 3.24l1.75-.12.58-1.65L12 3.1l1.73.03-1.35 1.13.51 1.67m-3.3 3.61-1.16-.73-1.12.78.34-1.32-1.09-.83 1.36-.09.45-1.29.51 1.27 1.36.03-1.05.87.4 1.31M19 13.5a5.5 5.5 0 0 1-5.5 5.5c-1.22 0-2.35-.4-3.26-1.07l7.69-7.69c.67.91 1.07 2.04 1.07 3.26m-4.4 6.58 2.77-1.15-.24 3.35-2.53-2.2m4.33-2.7 1.15-2.77 2.2 2.54-3.35.23m1.15-4.96-1.14-2.78 3.34.24-2.2 2.54M9.63 18.93l2.77 1.15-2.53 2.19-.24-3.34Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="zh-CN" class="md-select__link">
+              中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08Z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/webtechwiki/k8s" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    k8s入门与进阶实战
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="k8s入门与进阶实战" class="md-nav__button md-logo" aria-label="k8s入门与进阶实战" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    k8s入门与进阶实战
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/webtechwiki/k8s" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    k8s入门与进阶实战
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    首页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    第 01 章 &nbsp; k8s的基础概念
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            第 01 章 &nbsp; k8s的基础概念
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/00-start/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.01 &nbsp; k8s简介
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/02-conception/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.02 &nbsp; 核心概念
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/03-compoents/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.03 &nbsp; 核心组件
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/04-yaml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.04 &nbsp; 资源配置清单
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/05-namespace/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.05 &nbsp; 名称空间
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/06-pod/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.06 &nbsp; pod的基本操作
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/07-controller/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.07 &nbsp; 控制器
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/08-service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.08 &nbsp; 服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/09-ingress/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.09 &nbsp; Ingress
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/10-storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.10 &nbsp; 存储
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01.basic/01-build_in_virtual/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.11 &nbsp; 搭建简单集群
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    第 02 章 &nbsp; 在centos7搭建k8s
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            第 02 章 &nbsp; 在centos7搭建k8s
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/01-summary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.01 &nbsp; k8s进阶知识概述
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/02-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.02 &nbsp; k8s二进制安装环境准备
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/03-sign-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.03 &nbsp; 证书签发环境准备
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/04-install-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.04 &nbsp; 安装docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/05-install-harbor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.05 &nbsp; 安装harhor服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/06-install-etcd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.06 &nbsp; 安装etcd服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/07-install-apiserver/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.07 &nbsp; 安装apiserver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/08-install-agent-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.08 &nbsp; 安装L4反向代理服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/09-install-other-component/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.09 &nbsp; 安装控制节点的其他组件
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/10-install-kubelet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.10 &nbsp; 安装kubectl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/11-install-kubeproxy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.11 &nbsp; 安装kube-02.proxy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/12-cfssl-review/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.12 &nbsp; cfssl证书工具介绍
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/13-kubectl-command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.13 &nbsp; 声明式资源管理方法
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/14-kubectl-yaml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.14 &nbsp; 陈述式资源管理方法
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/15-flannel-plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.15 &nbsp; flannel网络插件
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/16-flannel-model/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.16 &nbsp; flannel模型介绍
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/17-flannel-optimize/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.17 &nbsp; flannel优化
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/18-coredns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.18 &nbsp; 使用coredns实现服务发现
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/19-nodeport/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.19 &nbsp; 服务暴露之nodePort型service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02.enhancement/20-ingress/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2.20 &nbsp; 服务暴露之Ingress
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    第 03 章 &nbsp; 在debian搭建k8s
+  </span>
+  
+
+            </a>
+            
+              <label class="md-nav__link " for="__nav_4">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            第 03 章 &nbsp; 在debian搭建k8s
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.02 &nbsp; k8s二进制安装环境准备
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-install_containerd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.03 &nbsp; 安装containerd作为runtime
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-sign-prepare/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.04 &nbsp; 签发SSL证书
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    3.05 &nbsp; 安装etcd服务
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    3.05 &nbsp; 安装etcd服务
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#etcd_1" class="md-nav__link">
+    一、etcd相关参数
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    二、安装
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etcd_2" class="md-nav__link">
+    三、编写etcd启动脚本
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supervisoretcd" class="md-nav__link">
+    四、使用supervisor来启动etcd
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-install-apiserver/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.06 &nbsp; 安装apiserver
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-install-agent-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.07 &nbsp; 搭建L4反向代理服务
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-install-other-component/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.08 &nbsp; 安装controllerManager和scheduler
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-install-kubelet/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.09 &nbsp; 安装kubectl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-install-kubeproxy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.10 &nbsp; 安装proxy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-install-calico-coredns/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.11 &nbsp; 安装calico和coreDNS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-install-traefik/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.12 &nbsp; 安装traefik
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-deploy-app/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    3.13 &nbsp; 在k8s环境部署应用
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    第 04 章 &nbsp; 扩展知识
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            第 04 章 &nbsp; 扩展知识
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/01-k8s-resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.01 &nbsp; k8s资源分类
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/02-install-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.02 &nbsp; 使用二进制安装包安装docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/04-install-harbor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.03 &nbsp; 搭建harbor私有镜像仓库
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/05-ip_suggestion/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.04 &nbsp; 集群搭建IP网段规划建议
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04.extend/06-run-centos6/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    4.05 &nbsp; 解决centos6镜像启动容器失败的问题
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#etcd_1" class="md-nav__link">
+    一、etcd相关参数
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    二、安装
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#etcd_2" class="md-nav__link">
+    三、编写etcd启动脚本
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supervisoretcd" class="md-nav__link">
+    四、使用supervisor来启动etcd
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/webtechwiki/k8s/tree/main/docs/03.ultimate/04-install-ectd.md" title="编辑此页" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="etcd">安装etcd<a class="headerlink" href="#etcd" title="Permanent link">&para;</a></h1>
+<p>我们将使用<code>199-debian</code>、<code>192-debian</code>、<code>160-debian</code>这三台主机搭建ectd集群。</p>
+<h2 id="etcd_1">一、etcd相关参数<a class="headerlink" href="#etcd_1" title="Permanent link">&para;</a></h2>
+<p>常见参数说明说下</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>对应环境变量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--name</td>
+<td>ETCD_NAME</td>
+<td>当前etcd的唯一名称，要保证和其他节点不冲突</td>
+</tr>
+<tr>
+<td>--data-dir</td>
+<td>ETCD_DATA_DIR</td>
+<td>指定etcd存储数据的存储位置</td>
+</tr>
+<tr>
+<td>--listen-peer-urls</td>
+<td>ETCD_LISTEN_PEER_URLS</td>
+<td>端对端的通信url，包含主机地址和端口号，指定当前etcd和其他节点etcd通信时的服务地址和端口。</td>
+</tr>
+<tr>
+<td>--listen-client-urls</td>
+<td>ETCD_LISTEN_CLIENT_URLS</td>
+<td>指定当前etcd接收客户端指令的地址和端口，在这里的客户端我们指的是k8s集群的master节点</td>
+</tr>
+<tr>
+<td>--initial-advertise-peer-urls</td>
+<td>ETCD_INITIAL_ADVERTISE_PEER_URLS</td>
+<td>指定etcd广播端口，当前etcd会将数据同步到其他节点，通过2380端口发送</td>
+</tr>
+<tr>
+<td>--advertise-client-urls</td>
+<td>ETCD_ADVERTISE_CLIENT_URLS</td>
+<td>给客户端通告的端口</td>
+</tr>
+<tr>
+<td>--initial-cluster</td>
+<td>ETCD_INITIAL_CLUSTER</td>
+<td>定义etcd集群中所有节点的名称和IP，以及通信端口</td>
+</tr>
+<tr>
+<td>--initial-cluster-token</td>
+<td>ETCD_INITIAL_CLUSTER_TOKEN</td>
+<td>定义etcd中的token，所有节点的token必须保持一致</td>
+</tr>
+<tr>
+<td>--initial-cluster-state</td>
+<td>ETCD_INITIAL_CLUSTER_STATE</td>
+<td>定义etcd集群的状态，new代表新建集群，existing代表加入现有集群</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">二、安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>先创建etcd默认的配置文件目录和数据目录</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/var/lib/etcd/
+</code></pre></div>
+<p>安装到<code>/opt</code>目录，后续的k8s集群组件我们将都安装在此</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># 解压</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>tar<span class="w"> </span>-zxvf<span class="w"> </span>etcd-v3.5.4-linux-amd64.tar.gz
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># 将etc移到/opt目录，并修改etcd目录名</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>mv<span class="w"> </span>etcd-v3.5.4-linux-amd64/<span class="w"> </span>/opt/etcd-v3.5.4
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># 创建etcd软链接</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>ln<span class="w"> </span>-s<span class="w"> </span>/opt/etcd-v3.5.4<span class="w"> </span>/opt/etcd
+</code></pre></div>
+<h2 id="etcd_2">三、编写etcd启动脚本<a class="headerlink" href="#etcd_2" title="Permanent link">&para;</a></h2>
+<p>我们先在etcd目录编写启动脚本<code>/opt/etcd/startup.sh</code>，如下</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>./etcd<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--name<span class="o">=</span><span class="s2">&quot;etcd-server-199&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--data-dir<span class="o">=</span><span class="s2">&quot;/var/lib/etcd/&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>--listen-peer-urls<span class="o">=</span><span class="s2">&quot;https://192.168.9.199:2380&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span>--listen-client-urls<span class="o">=</span><span class="s2">&quot;https://192.168.9.199:2379,http://127.0.0.1:2379&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span>--initial-advertise-peer-urls<span class="o">=</span><span class="s2">&quot;https://192.168.9.199:2380&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span>--advertise-client-urls<span class="o">=</span><span class="s2">&quot;https://192.168.9.199:2379&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span>--initial-cluster<span class="o">=</span><span class="s2">&quot;etcd-server-199=https://192.168.9.199:2380,etcd-server-192=https://192.168.9.192:2380,etcd-server-160=https://192.168.9.160:2380&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span>--initial-cluster-token<span class="o">=</span><span class="s2">&quot;etcd-cluster&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span>--initial-cluster-state<span class="o">=</span><span class="s2">&quot;new&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span>--cert-file<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/etcd.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span>--key-file<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/etcd-key.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span>--trusted-ca-file<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/ca.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span>--peer-cert-file<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/etcd.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span>--peer-key-file<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/etcd-key.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">  </span>--peer-trusted-ca-file<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/ca.pem&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span>--peer-client-cert-auth<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">  </span>--client-cert-auth
+</code></pre></div>
+<p>给启动脚本添加权限</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>/opt/etcd/startup.sh
+</code></pre></div>
+<h2 id="supervisoretcd">四、使用supervisor来启动etcd<a class="headerlink" href="#supervisoretcd" title="Permanent link">&para;</a></h2>
+<p>现在我们要安装supervisor，用于管理etcd服务，后续的k8s相关组件，我们都用supervisor来管理</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 安装supervisor</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>apt<span class="w"> </span>install<span class="w"> </span>supervisor<span class="w"> </span>-y
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># 启动supervisor</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>systemctl<span class="w"> </span>start<span class="w"> </span>supervisor
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># 让superivisor开机自启</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>supervisor
+</code></pre></div>
+<p>添加etcd的supervisor进程维护脚本<code>/etc/supervisor/conf.d/etcd-server.conf</code>，添加以下内容</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">[program:etcd-server-199]</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">directory</span><span class="o">=</span><span class="s">/opt/etcd</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">command</span><span class="o">=</span><span class="s">/opt/etcd/startup.sh</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="na">numprocs</span><span class="o">=</span><span class="s">1</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="na">autostart</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="na">autorestart</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="na">startsecs</span><span class="o">=</span><span class="s">30</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="na">startretries</span><span class="o">=</span><span class="s">3</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="na">exitcodes</span><span class="o">=</span><span class="s">0,2</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="na">stopsignal</span><span class="o">=</span><span class="s">QUIT</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="na">stopwaitsecs</span><span class="o">=</span><span class="s">10</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="na">user</span><span class="o">=</span><span class="s">root</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="na">redirect_stderr</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="na">stdout_logfile</span><span class="o">=</span><span class="s">/data/logs/supervisor/etcd.stdout.log</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="na">stdout_logfile_maxbytes</span><span class="o">=</span><span class="s">64MB</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="na">stdout_logfile_backups</span><span class="o">=</span><span class="s">4</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="na">stdout_capture_maxbytes</span><span class="o">=</span><span class="s">1MB</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="na">stdout_event_enabled</span><span class="o">=</span><span class="s">false</span>
+</code></pre></div>
+<blockquote>
+<p>注意：在不同的主机上使用不同的服务名称，这样好辨别，如199-debian使用<code>etcd-server-199</code>，如192-debian使用<code>etcd-server-192</code></p>
+</blockquote>
+<p>supervisor相关参数：</p>
+<ul>
+<li><code>program</code>: 程序名称</li>
+<li><code>directory</code>: 脚本目录</li>
+<li><code>command</code>: 启动的命令</li>
+<li><code>numprocs</code>: 启动的进程数</li>
+<li><code>autostart</code>: 是否开启自动启动</li>
+<li><code>autorestart</code>: 是否自动重启</li>
+<li><code>startsecs</code>: 启动之后多少时间后判定为已起来</li>
+<li><code>startretries</code>: 重启次数</li>
+<li><code>exitcodes</code>: 退出的code</li>
+<li><code>stopsignal</code>: 停止信号</li>
+<li><code>stopwaitsecs</code>: 停止等待的时间</li>
+<li><code>redirect_stderr</code>: 是否重定向标准输出</li>
+<li><code>stdout_logfile</code>: 进程标准输出内容写入文件</li>
+<li><code>stdout_logfile_maxbytes</code>: stdout_logfile文件做log滚动时，单个stdout_logfile文件的最大字节数，默认50M，设置为0则认为不做log滚动方式</li>
+<li><code>stdout_logfile_backups</code>: stdout_logfile备份文件个数，默认为10</li>
+<li><code>stdout_capture_maxbytes</code>: 当进程处于stdout capture mode模式的时候，写入capture FIFO的最大字节数限制，默认为0，此时认为stdout capture mode模式关闭</li>
+<li><code>stdout_event_enabled</code>: 如果设置为true，在进程写入标准文件是会发起PROCESS_LOG_STDOUT</li>
+</ul>
+<p>更新supervisod配置文件</p>
+<p>```shell·</p>
+<h1 id="supervisor">创建supervisor日志目录<a class="headerlink" href="#supervisor" title="Permanent link">&para;</a></h1>
+<p>mkdir -p /data/logs/supervisor/</p>
+<h1 id="supervisod">更新supervisod配置<a class="headerlink" href="#supervisod" title="Permanent link">&para;</a></h1>
+<p>supervisorctl update
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>通过`supervisorctl status`查询supervisord状态，看到如下内容，代表supervisor正常运行
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>```shell
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>root@debian:/opt/etcd# supervisorctl status
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>etcd-server-199                  RUNNING   pid 85297, uptime 0:04:38
+</code></pre></div></p>
+<p>此时，我们再使用<code>netstat -luntp | grep etcd</code>查看网络服务端口，看到如下信息代表etcd已经正常启动</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>root@debian:/opt/etcd#<span class="w"> </span>netstat<span class="w"> </span>-luntp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>etcd
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>tcp<span class="w">        </span><span class="m">0</span><span class="w">      </span><span class="m">0</span><span class="w"> </span><span class="m">192</span>.168.9.199:2379<span class="w">      </span><span class="m">0</span>.0.0.0:*<span class="w">               </span>LISTEN<span class="w">      </span><span class="m">85298</span>/./etcd<span class="w">        </span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>tcp<span class="w">        </span><span class="m">0</span><span class="w">      </span><span class="m">0</span><span class="w"> </span><span class="m">127</span>.0.0.1:2379<span class="w">          </span><span class="m">0</span>.0.0.0:*<span class="w">               </span>LISTEN<span class="w">      </span><span class="m">85298</span>/./etcd<span class="w">        </span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>tcp<span class="w">        </span><span class="m">0</span><span class="w">      </span><span class="m">0</span><span class="w"> </span><span class="m">192</span>.168.9.199:2380<span class="w">      </span><span class="m">0</span>.0.0.0:*<span class="w">               </span>LISTEN<span class="w">      </span><span class="m">85298</span>/./etcd
+</code></pre></div>
+<h2 id="_2">五、集群验证<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>为了方便直接调用<code>etcdctl</code>命令，我们还可以创建其软连接</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ln<span class="w"> </span>-s<span class="w"> </span>/opt/etcd/etcdctl<span class="w"> </span>/usr/local/bin/etcdctl
+</code></pre></div>
+<p>我们在任意节点使用etcdctl命令检查集群状态，需要注意的是，要确切指定证书的位置</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>etcdctl<span class="w"> </span>--cacert<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/ca.pem&quot;</span><span class="w"> </span>--cert<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/etcd.pem&quot;</span><span class="w"> </span>--key<span class="o">=</span><span class="s2">&quot;/etc/kubernetes/pki/etcd-key.pem&quot;</span><span class="w"> </span>--endpoints<span class="o">=</span><span class="s2">&quot;https://192.168.9.199:2379,https://192.168.9.192:2379,https://192.168.9.160:2379&quot;</span><span class="w"> </span>endpoint<span class="w"> </span>status<span class="w"> </span>--write-out<span class="o">=</span>table
+</code></pre></div>
+<p>如果看到如下输出，代表 ectd 集群搭建成功</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>+----------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="p">|</span><span class="w">          </span>ENDPOINT<span class="w">          </span><span class="p">|</span><span class="w">        </span>ID<span class="w">        </span><span class="p">|</span><span class="w"> </span>VERSION<span class="w"> </span><span class="p">|</span><span class="w"> </span>DB<span class="w"> </span>SIZE<span class="w"> </span><span class="p">|</span><span class="w"> </span>IS<span class="w"> </span>LEADER<span class="w"> </span><span class="p">|</span><span class="w"> </span>IS<span class="w"> </span>LEARNER<span class="w"> </span><span class="p">|</span><span class="w"> </span>RAFT<span class="w"> </span>TERM<span class="w"> </span><span class="p">|</span><span class="w"> </span>RAFT<span class="w"> </span>INDEX<span class="w"> </span><span class="p">|</span><span class="w"> </span>RAFT<span class="w"> </span>APPLIED<span class="w"> </span>INDEX<span class="w"> </span><span class="p">|</span><span class="w"> </span>ERRORS<span class="w"> </span><span class="p">|</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>+----------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="p">|</span><span class="w"> </span>https://192.168.9.199:2379<span class="w"> </span><span class="p">|</span><span class="w"> </span>c8815bb4b21730b3<span class="w"> </span><span class="p">|</span><span class="w">   </span><span class="m">3</span>.5.4<span class="w"> </span><span class="p">|</span><span class="w">  </span><span class="m">311</span><span class="w"> </span>kB<span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="nb">true</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="nb">false</span><span class="w"> </span><span class="p">|</span><span class="w">         </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="m">37628</span><span class="w"> </span><span class="p">|</span><span class="w">              </span><span class="m">37628</span><span class="w"> </span><span class="p">|</span><span class="w">        </span><span class="p">|</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="p">|</span><span class="w"> </span>https://192.168.9.192:2379<span class="w"> </span><span class="p">|</span><span class="w"> </span>f30299e8a0b43b4d<span class="w"> </span><span class="p">|</span><span class="w">   </span><span class="m">3</span>.5.4<span class="w"> </span><span class="p">|</span><span class="w">  </span><span class="m">311</span><span class="w"> </span>kB<span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="nb">false</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="nb">false</span><span class="w"> </span><span class="p">|</span><span class="w">         </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="m">37628</span><span class="w"> </span><span class="p">|</span><span class="w">              </span><span class="m">37628</span><span class="w"> </span><span class="p">|</span><span class="w">        </span><span class="p">|</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="p">|</span><span class="w"> </span>https://192.168.9.160:2379<span class="w"> </span><span class="p">|</span><span class="w"> </span>61c90f737ccf2682<span class="w"> </span><span class="p">|</span><span class="w">   </span><span class="m">3</span>.5.4<span class="w"> </span><span class="p">|</span><span class="w">  </span><span class="m">311</span><span class="w"> </span>kB<span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="nb">false</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="nb">false</span><span class="w"> </span><span class="p">|</span><span class="w">         </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="m">37628</span><span class="w"> </span><span class="p">|</span><span class="w">              </span><span class="m">37628</span><span class="w"> </span><span class="p">|</span><span class="w">        </span><span class="p">|</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>+----------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+</code></pre></div>
+<p>为了验证etcd集群是否正常工作，我们还可以现在<code>199-debian</code>设置一个值，如下</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>etcdctl<span class="w"> </span>put<span class="w"> </span>name<span class="w"> </span>lixiaoming123
+</code></pre></div>
+<p>再通过<code>192-debian</code>和<code>160-debian</code>去读取值，如果正常取到，代表etcd集群正常工作，如下命令</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>etcdctl<span class="w"> </span>get<span class="w"> </span>name
+</code></pre></div>
+<p>如果需要了解<code>etcdctl</code>这个指令的更多用法，使用<code>--help</code>参数即可查看。</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            回到页面顶部
+          </button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../03-sign-prepare/" class="md-footer__link md-footer__link--prev" aria-label="上一页: 3.04 &amp;nbsp; 签发SSL证书" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                3.04 &nbsp; 签发SSL证书
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../05-install-apiserver/" class="md-footer__link md-footer__link--next" aria-label="下一页: 3.06 &amp;nbsp; 安装apiserver" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                3.06 &nbsp; 安装apiserver
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 - 2023 phy.xyz
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.4e0fa4ba.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": false, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "none"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>
